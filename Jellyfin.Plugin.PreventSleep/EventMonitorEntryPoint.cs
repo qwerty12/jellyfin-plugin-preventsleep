@@ -15,6 +15,7 @@ along with this program. If not, see<http://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -138,6 +139,16 @@ public class EventMonitorEntryPoint : IHostedService
                 LogWin32Error("PowerSetRequest");
             }
         }
+
+        try
+        {
+            using Process currentProcess = Process.GetCurrentProcess();
+            currentProcess.PriorityClass = ProcessPriorityClass.AboveNormal;
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     // Periodically check if the PowerRequest can be cleared.
@@ -175,6 +186,16 @@ public class EventMonitorEntryPoint : IHostedService
 
             _unblockTimer.Dispose();
             _unblockTimer = null;
+        }
+
+        try
+        {
+            using Process currentProcess = Process.GetCurrentProcess();
+            currentProcess.PriorityClass = ProcessPriorityClass.Normal;
+        }
+        catch
+        {
+            // ignored
         }
     }
 
